@@ -1,6 +1,7 @@
 const express = require('express');
 const { check } = require('express-validator');
 const authController = require('../controllers/authController');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router.post('/login', [
   check('password', 'Password is required').exists(),
 ], authController.login);
 
-router.post('/logout', authController.logout);
+router.get('/',  authMiddleware, authController.getUserProfile);
+router.put('/update', authMiddleware, authController.editUserProfile);
 
 module.exports = router;

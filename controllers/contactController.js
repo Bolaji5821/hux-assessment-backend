@@ -33,6 +33,7 @@ exports.getAllContacts = async (req, res) => {
   const db = getDB();
 
   try {
+    console.log(req.user)
     const contacts = await db.collection('contacts').find({ userId: req.user.email }).toArray();
     res.json(contacts);
   } catch (err) {
