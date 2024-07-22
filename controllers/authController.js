@@ -139,7 +139,14 @@ exports.editUserProfile = async (req, res) => {
     );
     
     if (!user) {
-      return res.status(404).json({ message: 'Usersss not found' });
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const isusername = await db.collection('users').findOne(
+      { username }, 
+    );
+    
+    if (isusername) {
+      return res.status(404).json({ message: 'Username already exists' });
     }
     const updatedUser = await db.collection('users').findOneAndUpdate(
       { _id: new ObjectId(userId) },
@@ -149,7 +156,7 @@ exports.editUserProfile = async (req, res) => {
 
     
 
-    res.json(updatedUser.value);
+    res.json(updatedUser);
   } catch (err) {
     console.error(err.message);
     res.status(500).send({ message: 'Server error', error: err.message });

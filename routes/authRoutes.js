@@ -16,7 +16,7 @@ router.post('/login', [
   check('password', 'Password is required').exists(),
 ], authController.login);
 
-// router.get('/',  authMiddleware, authController.getUserProfile);
-// router.put('/update', authMiddleware, authController.editUserProfile);
+router.get('/',  authMiddleware, authController.getUserProfile);
+router.put('/update', authMiddleware, authController.editUserProfile);
 
 module.exports = router;
