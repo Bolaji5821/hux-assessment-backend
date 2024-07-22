@@ -25,7 +25,8 @@ exports.createContact = async (req, res) => {
     res.json(newContact);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+   res.status(500).send({message:  err.message, error: err.message});
+
   }
 };
 
@@ -57,7 +58,26 @@ exports.getContact = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+exports.deleteContact = async (req, res) => {
+  const db = getDB();
 
+  try {
+    const contact = await db.collection('contacts').findOne({ _id: new ObjectId(req.params.id) });
+    if (!contact) {
+      return res.status(404).json({ msg: 'Contact not found' });
+    }
+
+    if (contact.userId !== req.user.email) {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
+
+    await db.collection('contacts').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.json({ msg: 'Contact removed' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
 exports.updateContact = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -92,23 +112,4 @@ exports.updateContact = async (req, res) => {
   }
 };
 
-exports.deleteContact = async (req, res) => {
-  const db = getDB();
 
-  try {
-    const contact = await db.collection('contacts').findOne({ _id: new ObjectId(req.params.id) });
-    if (!contact) {
-      return res.status(404).json({ msg: 'Contact not found' });
-    }
-
-    if (contact.userId !== req.user.email) {
-      return res.status(401).json({ msg: 'Not authorized' });
-    }
-
-    await db.collection('contacts').deleteOne({ _id: new ObjectId(req.params.id) });
-    res.json({ msg: 'Contact removed' });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-};

@@ -3,12 +3,11 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const client = new MongoClient(process.env.MONGO_URI, );
-
 let db;
 
 const connectDB = async () => {
   try {
+    const client = new MongoClient(process.env.MONGO_URI);
     await client.connect();
     db = client.db();
     console.log('MongoDB connected');
@@ -18,6 +17,15 @@ const connectDB = async () => {
   }
 };
 
-const getDB = () => db;
+const getDB = () => {
+  if (!db) {
+    throw new Error('Database not initialized. Call connectDB first.');
+  }
+  return db;
+};
 
-module.exports = { connectDB, getDB };
+const setDB = (database) => {
+  db = database;
+};
+
+module.exports = { connectDB, getDB, setDB };

@@ -20,8 +20,26 @@ const contactRoutes = require('./routes/contactRoutes');
 app.use('/api/users', authRoutes);
 app.use('/api/contacts', contactRoutes);
 
-// Connect to database and start server
-connectDB().then(() => {
+// Modified server start function
+const startServer = async (customDB) => {
+  if (customDB) {
+    app.locals.db = customDB;
+  } else {
+    await connectDB();
+  }
+
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-});
+  const server = app.listen(PORT, () => {
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`Server running on port ${PORT}`);
+    }
+  });
+  return server;
+};
+
+// Only start the server if this file is run directly
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, startServer };
