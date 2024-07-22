@@ -46,7 +46,7 @@ exports.register = async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send({message: 'server error', error: err.message});
   }
 };
 
@@ -85,19 +85,16 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send({message: 'server error', error: err.message});
   }
 };
-
-
 
 
 exports.getUserProfile = async (req, res) => {
   const db = getDB();
   try {
     const userId = req.user.id;
-    console.log(req.user);
-    console.log({ userId });
+  
 
     const user = await db.collection('users').findOne(
       { _id: new ObjectId(userId) }, 
@@ -111,12 +108,14 @@ exports.getUserProfile = async (req, res) => {
     res.json(user);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send({message: 'server error', error: err.message});
+
   }
 };
 
 
 // Edit user profile
+
 exports.editUserProfile = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -132,21 +131,27 @@ exports.editUserProfile = async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       updates.password = await bcrypt.hash(password, salt);
     }
-
+    const userId = req.user.id;
+ 
+    const user = await db.collection('users').findOne(
+      { _id: new ObjectId(userId) }, 
+      { projection: { password: 0 } }
+    );
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Usersss not found' });
+    }
     const updatedUser = await db.collection('users').findOneAndUpdate(
-      { _id: req.user.id },
+      { _id: new ObjectId(userId) },
       { $set: updates },
       { returnOriginal: false, projection: { password: 0 } }
     );
 
-    if (!updatedUser.value) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    
 
     res.json(updatedUser.value);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send({ message: 'Server error', error: err.message });
   }
 };
-
