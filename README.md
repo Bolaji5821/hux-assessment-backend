@@ -48,7 +48,7 @@ This is the backend repository for the Contact Management System, a RESTful API 
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-username/hux-assessment-backend.git
+   git clone https://github.com/Bolaji5821/hux-assessment-backend
    cd hux-assessment-backend
    ```
 
@@ -63,7 +63,7 @@ This is the backend repository for the Contact Management System, a RESTful API 
    MONGODB_URI=<MONGO STRING HERE>
    JWT_SECRET=your_jwt_secret
    ```
-   Replace the values with your specific configuration.
+ 
 
 ## Running the Application
 
